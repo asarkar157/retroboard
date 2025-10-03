@@ -1,0 +1,30 @@
+apiVersion: system-model.autodesk.com/1.0.0
+kind: component
+metadata:
+  computeProvider: aws-lambda
+  deploymentProvider: cloudos-v3
+  description: Retroboard serverless kanban board service
+  engineeringManager: user:unknown
+  languages:
+    - python
+  namespace: retroboard
+  name: retroboard
+  operationalPurpose: kanban-board
+  productOwner: user:unknown
+  runtimes: python
+  sourceRepositories: https://github.com/asarkar157/retroboard
+  serviceTier: 3
+  title: Retroboard Service
+spec:
+  dependsOn:
+    - resource:retroboard/retroboard-dynamodb
+    - resource:retroboard/retroboard-ses
+    - resource:retroboard/retroboard-s3
+    - resource:retroboard/retroboard-sqs
+    - resource:retroboard/retroboard-slack
+  lifecycle: steady-state
+  owner: user:unknown
+  providesApis:
+    - api:retroboard/retroboard-api
+  partOf: system:retroboard/retroboard
+  type: service
