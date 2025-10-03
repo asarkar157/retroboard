@@ -1,0 +1,63 @@
+apiVersion: system-model.autodesk.com/1.0.0
+kind: resource
+metadata:
+  namespace: retroboard
+  name: dynamodb
+  title: Retroboard - DynamoDB Table
+  description: Stores kanban board data
+  technology: aws-dynamodb
+  sourceRepositories:
+    - https://github.com/asarkar157/retroboard
+spec:
+  owner: user:unknown
+  type: database
+  lifecycle: steady-state
+  partOf: system:retroboard
+---
+apiVersion: system-model.autodesk.com/1.0.0
+kind: resource
+metadata:
+  namespace: retroboard
+  name: ses
+  title: Retroboard - SES
+  description: Sends summary emails
+  technology: aws-ses
+  sourceRepositories:
+    - https://github.com/asarkar157/retroboard
+spec:
+  owner: user:unknown
+  type: email-service
+  lifecycle: steady-state
+  partOf: system:retroboard
+---
+apiVersion: system-model.autodesk.com/1.0.0
+kind: resource
+metadata:
+  namespace: retroboard
+  name: s3
+  title: Retroboard - S3 Bucket
+  description: Serves static UI assets
+  technology: aws-s3
+  sourceRepositories:
+    - https://github.com/asarkar157/retroboard
+spec:
+  owner: user:unknown
+  type: object-storage
+  lifecycle: steady-state
+  partOf: system:retroboard
+---
+apiVersion: system-model.autodesk.com/1.0.0
+kind: resource
+metadata:
+  namespace: retroboard
+  name: sqs
+  title: Retroboard - SQS Queue
+  description: Queues email requests
+  technology: aws-sqs
+  sourceRepositories:
+    - https://github.com/asarkar157/retroboard
+spec:
+  owner: user:unknown
+  type: queue
+  lifecycle: steady-state
+  partOf: system:retroboard
