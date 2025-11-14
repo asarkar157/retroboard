@@ -1,0 +1,65 @@
+modules:
+  retroboard_frontend:
+    pipelines:
+      build_frontend:
+        name: "Retroboard Frontend Build"
+        type: build
+        description: "Builds and tests the Retroboard frontend, publishes Akamai artifact"
+        spec:
+          path: "."
+          architecture: amd64
+          os: linux
+          resources:
+            cpu: "1000m"
+            memory: "2Gi"
+          variables:
+            NODE_ENV: "production"
+          commands:
+          - type: build
+            name: Install Dependencies
+            image: node:18-alpine
+            spec:
+              command: |
+                npm ci --prefer-offline
+          - type: build
+            name: Lint Code
+            image: node:18-alpine
+            spec:
+              command: |
+                npm run lint
+          - type: build
+            name: Run Unit Tests
+            image: node:18-alpine
+            spec:
+              command: |
+                npm test -- --reporter=xunit --outputFile=test-results.xml
+              testReportPaths:
+              - "test-results.xml"
+          - type: build
+            name: Build Application
+            image: node:18-alpine
+            spec:
+              command: |
+                npm run build
+                ls -la dist/
+          artifacts:
+            akamai:
+              folder: "dist/"
+          coverage:
+            exclusions:
+            - "**/*.spec.js"
+            - "**/*.test.js"
+            - "**/node_modules/**"
+            reports:
+            - path: "coverage/lcov.info"
+          triggers:
+          - type: commit
+            name: "Build on Frontend Changes"
+            description: "Trigger build on commits to frontend/"
+            enabled: true
+            pushArtifact: true
+            spec:
+              branch: main
+              condition:
+                type: Regex
+                value: ^frontend/
