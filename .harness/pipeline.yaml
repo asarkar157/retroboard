@@ -1,0 +1,56 @@
+modules:
+  retroboard:
+    pipelines:
+      build_frontend:
+        name: "Retroboard Frontend Build"
+        type: build
+        description: "Builds and deploys the Retroboard frontend to Akamai CDN"
+        spec:
+          path: "frontend"
+          architecture: amd64
+          os: linux
+          resources:
+            cpu: "1000m"
+            memory: "2Gi"
+          commands:
+            - type: build
+              name: Install Dependencies
+              image: node:18-alpine
+              spec:
+                command: |
+                  npm ci --prefer-offline
+            - type: build
+              name: Lint Code
+              image: node:18-alpine
+              spec:
+                command: |
+                  npm run lint
+            - type: build
+              name: Run Unit Tests
+              image: node:18-alpine
+              spec:
+                command: |
+                  npm test -- --reporter=xunit --outputFile=test-results.xml
+                testReportPaths:
+                  - "test-results.xml"
+            - type: build
+              name: Build Application
+              image: node:18-alpine
+              spec:
+                command: |
+                  npm run build
+                  ls -la dist/
+          artifacts:
+            akamai:
+              folder: "dist/"
+          triggers:
+            - type: commit
+              name: "Build on Frontend Changes"
+              description: "Trigger build on commits to frontend directory"
+              enabled: true
+              pushArtifact: true
+              spec:
+                branch: main
+                condition:
+                  type: Regex
+                  value: ^frontend/
